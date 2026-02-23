@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  business  Business?
+}
+
+model Business {
+  id           String        @id @default(uuid())
+  name         String
+  industry     String
+  location     String
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id])
+  activityLogs ActivityLog[]
+  createdAt    DateTime      @default(now())
+}
+
+model ActivityCategory {
+  id             String           @id @default(uuid())
+  name           String           @unique
+  unit           String
+  description    String
+  emissionFactor EmissionFactor?
+  activityLogs   ActivityLog[]
+}
+
+model EmissionFactor {
+  id           String           @id @default(uuid())
+  factor       Float
+  categoryId   String           @unique
+  category     ActivityCategory @relation(fields: [categoryId], references: [id])
+}
+
+model ActivityLog {
+  id           String           @id @default(uuid())
+  quantity     Float
+  co2Emission  Float
+  date         DateTime
+  businessId   String
+  categoryId   String
+  business     Business         @relation(fields: [businessId], references: [id])
+  category     ActivityCategory @relation(fields: [categoryId], references: [id])
+  createdAt    DateTime         @default(now())
+}
