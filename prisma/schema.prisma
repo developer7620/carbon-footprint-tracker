@@ -7,22 +7,27 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   business  Business?
 }
 
 model Business {
-  id           String        @id @default(uuid())
-  name         String
-  industry     String
-  location     String
-  userId       String        @unique
-  user         User          @relation(fields: [userId], references: [id])
-  activityLogs ActivityLog[]
-  createdAt    DateTime      @default(now())
+  id                   String               @id @default(uuid())
+  name                 String
+  industry             String
+  location             String
+  employeeCount        Int
+  annualRevenue        Float?
+  userId               String               @unique
+  user                 User                 @relation(fields: [userId], references: [id])
+  activityLogs         ActivityLog[]
+  carbonIntensityScores CarbonIntensityScore[]
+  reductionGoals       ReductionGoal[]
+  emissionInsights     EmissionInsight[]
+  createdAt            DateTime             @default(now())
 }
 
 model ActivityCategory {
@@ -30,6 +35,7 @@ model ActivityCategory {
   name           String           @unique
   unit           String
   description    String
+  scope          Int              // 1, 2, or 3
   emissionFactor EmissionFactor?
   activityLogs   ActivityLog[]
 }
@@ -37,6 +43,8 @@ model ActivityCategory {
 model EmissionFactor {
   id           String           @id @default(uuid())
   factor       Float
+  unit         String
+  source       String           // e.g. "IPCC 2023", "EPA"
   categoryId   String           @unique
   category     ActivityCategory @relation(fields: [categoryId], references: [id])
 }
@@ -45,10 +53,56 @@ model ActivityLog {
   id           String           @id @default(uuid())
   quantity     Float
   co2Emission  Float
+  scope        Int              // 1, 2, or 3 (copied from category at time of logging)
   date         DateTime
+  notes        String?
   businessId   String
   categoryId   String
   business     Business         @relation(fields: [businessId], references: [id])
   category     ActivityCategory @relation(fields: [categoryId], references: [id])
   createdAt    DateTime         @default(now())
+}
+
+model IndustryBenchmark {
+  id                  String   @id @default(uuid())
+  industry            String   @unique
+  avgMonthlyEmissions Float    // average kg CO₂ per month for this industry
+  unit                String   @default("kg CO2")
+  source              String   // where this benchmark data comes from
+  updatedAt           DateTime @updatedAt
+}
+
+model CarbonIntensityScore {
+  id          String   @id @default(uuid())
+  score       Float    // 0-100
+  month       Int      // 1-12
+  year        Int
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@unique([businessId, month, year])
+}
+
+model ReductionGoal {
+  id               String   @id @default(uuid())
+  targetReduction  Float    // percentage e.g. 20 means 20% reduction
+  baselineEmission Float    // emission at time of setting goal
+  deadline         DateTime
+  status           String   @default("active") // active, achieved, missed
+  businessId       String
+  business         Business @relation(fields: [businessId], references: [id])
+  createdAt        DateTime @default(now())
+}
+
+model EmissionInsight {
+  id          String   @id @default(uuid())
+  type        String   // e.g. "top_emitter", "benchmark_comparison", "goal_progress"
+  message     String
+  data        Json     // flexible JSON to store supporting numbers
+  month       Int
+  year        Int
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id])
+  createdAt   DateTime @default(now())
 }
