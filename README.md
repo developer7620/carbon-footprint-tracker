@@ -1,0 +1,1 @@
+A production-ready REST API that helps small businesses track, analyze, and reduce their carbon emissions. Businesses can log daily activities like electricity usage, fuel consumption, shipping, and waste  and get real-time CO₂ calculations, monthly analytics, and actionable reduction suggestions.
