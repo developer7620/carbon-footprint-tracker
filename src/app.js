@@ -5,7 +5,10 @@ app.use(express.json());
 
 // Routes
 const authRoutes = require("./routes/auth.routes");
+const businessRoutes = require("./routes/business.routes");
+
 app.use("/api/auth", authRoutes);
+app.use("/api/business", businessRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
