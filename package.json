@@ -5,7 +5,9 @@
   "scripts": {
       "start": "node src/server.js",
       "dev": "nodemon src/server.js",
-      "seed": "node src/config/seed.js"
+      "seed": "node src/config/seed.js",
+      "seed:categories": "node src/config/seedCategories.js",
+      "seed:all": "npm run seed && npm run seed:categories"
   },
   "keywords": [],
   "author": "",
