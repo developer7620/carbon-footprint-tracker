@@ -8,11 +8,13 @@ const authRoutes = require("./routes/auth.routes");
 const businessRoutes = require("./routes/business.routes");
 const categoriesRoutes = require("./routes/categories.routes");
 const logsRoutes = require("./routes/logs.routes");
+const analyticsRoutes = require("./routes/analytics.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/logs", logsRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
