@@ -9,12 +9,14 @@ const businessRoutes = require("./routes/business.routes");
 const categoriesRoutes = require("./routes/categories.routes");
 const logsRoutes = require("./routes/logs.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
+const queueRoutes = require("./routes/queue.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/logs", logsRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/queue", queueRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

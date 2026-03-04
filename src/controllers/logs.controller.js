@@ -1,5 +1,6 @@
 const prisma = require("../config/prisma");
 const { calculateCO2 } = require("../services/carbon.service");
+const { deleteCachePattern } = require("../services/cache.service");
 
 // POST /api/logs
 const createLog = async (req, res) => {
@@ -42,6 +43,9 @@ const createLog = async (req, res) => {
         category: { include: { emissionFactor: true } },
       },
     });
+
+    // Invalidate all analytics cache for this business
+    await deleteCachePattern(`analytics:*:${business.id}:*`);
 
     res.status(201).json({
       success: true,
@@ -191,6 +195,8 @@ const deleteLog = async (req, res) => {
     }
 
     await prisma.activityLog.delete({ where: { id } });
+
+    await deleteCachePattern(`analytics:*:${business.id}:*`);
 
     res.status(200).json({
       success: true,
