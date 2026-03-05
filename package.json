@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-      "start": "node src/server.js",
-      "dev": "nodemon src/server.js",
-      "seed": "node src/config/seed.js",
-      "seed:categories": "node src/config/seedCategories.js",
-      "seed:all": "npm run seed && npm run seed:categories"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/config/seed.js",
+    "seed:categories": "node src/config/seedCategories.js",
+    "seed:all": "npm run seed && npm run seed:categories"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
     "express-validator": "^7.3.1",
     "ioredis": "^5.9.3",
     "jsonwebtoken": "^9.0.3",
+    "node-cron": "^4.2.1",
     "nodemailer": "^8.0.1",
     "swagger-ui-express": "^5.0.1",
     "tsx": "^4.21.0",
