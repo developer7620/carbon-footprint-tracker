@@ -1,6 +1,10 @@
 const prisma = require("../config/prisma");
 const { calculateCO2 } = require("../services/carbon.service");
 const { deleteCachePattern } = require("../services/cache.service");
+const {
+  detectAnomaly,
+  generateMonthlyInsights,
+} = require("../services/insights.service");
 
 // POST /api/logs
 const createLog = async (req, res) => {
@@ -47,13 +51,36 @@ const createLog = async (req, res) => {
     // Invalidate all analytics cache for this business
     await deleteCachePattern(`analytics:*:${business.id}:*`);
 
-    res.status(201).json({
+    // Run anomaly detection and insight generation in background
+    // We don't await these — they shouldn't slow down the response
+    const logWithCategory = await prisma.activityLog.findUnique({
+      where: { id: log.id },
+      include: { category: true },
+    });
+
+    const anomaly = await detectAnomaly(logWithCategory, business.id);
+
+    // Generate insights without blocking response
+    generateMonthlyInsights(business.id).catch((err) =>
+      console.error("Insight generation error:", err.message),
+    );
+
+    // Include anomaly warning in response if detected
+    const responseData = {
+      log,
+      calculation: calculation.breakdown,
+    };
+
+    if (anomaly) {
+      responseData.anomalyAlert = anomaly;
+    }
+
+    return res.status(201).json({
       success: true,
-      message: "Activity logged successfully",
-      data: {
-        log,
-        calculation: calculation.breakdown,
-      },
+      message: anomaly
+        ? `Activity logged — ⚠️ Anomaly detected`
+        : "Activity logged successfully",
+      data: responseData,
     });
   } catch (error) {
     console.error("Create log error:", error);

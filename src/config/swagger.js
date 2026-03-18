@@ -34,7 +34,7 @@ or logging in at \`POST /api/auth/login\`
     servers: [
       { url: "http://localhost:3000", description: "Development server" },
       {
-        url: "https://carbon-footprint-tracker.railway.app",
+        url: "https://carbon-footprint-tracker.up.railway.app",
         description: "Production server",
       },
     ],
